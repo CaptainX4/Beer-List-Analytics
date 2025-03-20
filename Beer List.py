@@ -242,7 +242,33 @@ def Beer_List():
             plt.ylabel(y_var)
             plt.show()
 
-        analysis_options = ["1", "2", "3", "4", "5", "6", "7"]
+        # Box Plot
+        def box():
+            # print("Would you like to test Jon's data, or Zak's?")
+            JZ = input("Would you like to test Jon's data, or Zak's? ")
+
+            # y = path[input("Y axis variable: ")]
+            # path["Attrition"] = df["Attrition"].apply(lambda x: 1 if x == "Yes" else 0)
+
+            def create_boxplots(path, columns, target = JZ):
+                for col in columns:
+                    plt.figure(figsize = (8, 6))
+                    sns.boxplot(x = target, y = col, data = path)
+                    # plt.title(f"Box Plot of {col} vs. Attrition")
+                    plt.xticks([0, 1], ["No", "Yes"])
+                    plt.ylabel(col)
+                    plt.show()
+
+            columns_to_plot = ["Territory",
+                               "Brewery",
+                               "Had",
+                               "Style",
+                               "ABV",
+                               "SRC"]
+
+            create_boxplots(path, columns_to_plot)
+
+        analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
         def testype():
             test_choice = input("What Beer List data would you like to analyze?\n"
@@ -253,6 +279,7 @@ def Beer_List():
                                 "\"5\" for scatter matrix\n"
                                 "\"6\" for contour plot\n"
                                 "\"7\" for violin plot\n"
+                                "\"8\" for box plot\n"
                                 "Your choice: ")
             print()
 
@@ -266,6 +293,7 @@ def Beer_List():
                                     "\"5\" for scatter matrix\n"
                                     "\"6\" for contour plot\n"
                                     "\"7\" for violin plot\n"
+                                    "\"8\" for box plot\n"
                                     "Your choice: ")
                 print()
             else:
@@ -291,6 +319,8 @@ def Beer_List():
                 elif test_choice == "7":
                     preprocess()
                     violin()
+                elif test_choice == "8":
+                    box()
         testype()
 
         print()
