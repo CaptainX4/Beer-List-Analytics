@@ -226,14 +226,20 @@ def Beer_List():
         #Contour Plot
         def contour():
             print("What two variables would you like to test?")
-            x = path[input("X axis variable: ")]
-            y = path[input("Y axis variable: ")]
 
-            sns.kdeplot(x = x, y = y, fill = True, cmap = "viridis")
+            # getting input and saving it into a variable for labels
+            x_var = input("X axis variable: ")
+            y_var = input("Y axis variable: ")
 
-            plt.title(f"Contour Plot of {x} vs. {y}")
-            plt.xlabel(f"{x}")
-            plt.ylabel(f"{y}")
+            # taking input and getting the actual data to plot
+            x = path[x_var]
+            y = path[y_var]
+
+            sns.kdeplot(x=x, y=y, fill=True, cmap="viridis")
+
+            plt.title(f"Contour Plot of {x_var} vs. {y_var}")
+            plt.xlabel(x_var)
+            plt.ylabel(y_var)
             plt.show()
 
         analysis_options = ["1", "2", "3", "4", "5", "6", "7"]
