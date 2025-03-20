@@ -20,7 +20,7 @@ def Beer_List():
           "Please be patient. You are working with a lot of data. It takes a minute to load.")
     print()
 
-    start = input("Press any key to continue. ")
+    start = input("Press any key and hit return to continue. ")
 
     if len(start) == 0:
         print()
