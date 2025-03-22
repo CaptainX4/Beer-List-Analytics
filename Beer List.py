@@ -7,6 +7,13 @@ import urllib.request as urllib2
 import warnings
 warnings.filterwarnings("ignore")
 from io import StringIO
+from sklearn import tree
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
 
 
 def Beer_List():
@@ -123,7 +130,7 @@ def Beer_List():
 
             sheet[feat_column] = sheet[feat_column].map(mapping)
             sheet[feat_column] = sheet[feat_column].astype("Int64")
-            return mapping
+            # return mapping
             # print(mapping)
 
         def preprocess():
@@ -261,7 +268,46 @@ def Beer_List():
 
             create_boxplots(path, columns_to_plot)
 
-        analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8"]
+        analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+        path = path.dropna()
+
+        #Logististic Regression
+        def log_reg():
+            JZ = input("Would you like to test Jon's data, or Zak's? ")
+            down = int(input("How many levels of depth for this model? "))
+
+            x = path[["Territory", "Style", "ABV"]]
+            y = path[JZ]
+
+            X_train, X_test, y_train, y_test = train_test_split(x, y,
+                                                                test_size = 0.3,
+                                                                random_state = 11)
+
+            lr = LogisticRegression()
+
+            lr.fit(X_train,y_train)
+
+            predict = lr.predict(X_test)
+
+            print(pd.DataFrame(confusion_matrix(y_test,predict),
+                               columns = ["Predicted No","Predicted Yes"],
+                               index = ["Actual No", "Actual Yes"]))
+            print(classification_report(y_test,predict))
+
+            y_predict = lr.predict(X_test)
+
+            accuracy = accuracy_score(y_test, y_predict)
+            print("Accuracy:", accuracy)
+
+            dt = DecisionTreeClassifier(max_depth = down)
+            dt_model = dt.fit(X_train, y_train)
+
+            fig = plt.figure(figsize = (10, 8))
+            tree.plot_tree(dt_model,
+                           feature_names = list(x.columns),
+                           class_names = ['Not Had', 'Had'])
+            plt.show()
 
         def testype():
             test_choice = input("What Beer List data would you like to analyze?\n"
@@ -273,6 +319,7 @@ def Beer_List():
                                 "\"6\" for contour plot\n"
                                 "\"7\" for violin plot\n"
                                 "\"8\" for box plot\n"
+                                "\"9\" for Logistic Regression\n"
                                 "Your choice: ")
             print()
 
@@ -287,6 +334,7 @@ def Beer_List():
                                     "\"6\" for contour plot\n"
                                     "\"7\" for violin plot\n"
                                     "\"8\" for box plot\n"
+                                    "\"9\" for Logistic Regression\n"
                                     "Your choice: ")
                 print()
             else:
@@ -314,6 +362,9 @@ def Beer_List():
                     violin()
                 elif test_choice == "8":
                     box()
+                elif test_choice == "9":
+                    preprocess()
+                    log_reg()
         testype()
 
         print()
