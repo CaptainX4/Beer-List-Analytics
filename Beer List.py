@@ -170,14 +170,6 @@ def Beer_List():
             path.hist()
             plt.show()
 
-        # #Violin Plot
-        # def violin():
-        #     plt.rcParams["figure.figsize"] = [8, 6]
-        #     sns.violinplot(x="Zak", y=path["Territory"], palette="bright", data=path)
-        #     plt.xticks([0, 1], ["Negative", "Positive"])
-        #     # plt.title(f"Violin Plot of {column} vs. Outcome")
-        #     plt.show()
-
         #Violin Plot
         def violin():
             print("What two variables would you like to test?")
