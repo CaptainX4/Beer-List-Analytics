@@ -123,6 +123,8 @@ def Beer_List():
 
             sheet[feat_column] = sheet[feat_column].map(mapping)
             sheet[feat_column] = sheet[feat_column].astype("Int64")
+            return mapping
+            # print(mapping)
 
         def preprocess():
             anonymizer(path, "Territory")
@@ -183,8 +185,7 @@ def Beer_List():
             y = input("Y axis variable: ")
             plt.rcParams["figure.figsize"] = [8, 6]
             sns.violinplot(x = x, y = path[y], palette = "bright", data = path)
-            plt.xticks([0, 1], ["Negative", "Positive"])
-            # plt.title(f"Violin Plot of {column} vs. Outcome")
+            plt.title(f"Violin Plot of {x} vs. {y}")
             plt.show()
 
         #Distribution Plot
