@@ -26,17 +26,44 @@ def Beer_List():
             print("What two variables would you like to test?\n"
                   "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Zak,\" \"Jon,\" \"Had,\" \"Style,\" \"ABV,\" and \"SRC.\"""")
             x = input("X axis variable: ")
-            y = input("Y axis variable: ")
-            while x and y not in var_options:
-                print("One or both of your inputs was invalid.")
+            while x not in var_options:
+                print("Invalid input.")
                 print()
                 x = input("X axis variable: ")
+                print()
+            else:
+                return x
+        if n == 3:
+            print("Pick a drinker (Jon or Zak) and a variable you'd like to test against.\n"
+                  "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Style,\" \"ABV,\" and \"SRC.\"""")
+            x = input("Who's drinking? ")
+            while x not in var_options:
+                print("Invalid input.")
+                print()
+                x = input("Who's drinking? ")
+                print()
+            else:
+                return x
+
+    def query_2(m):
+        if m == 1:
+            y = input("Y axis variable: ")
+            while y not in var_options:
+                print("Invalid input.")
+                print()
                 y = input("Y axis variable: ")
                 print()
             else:
-                x = input("X axis variable: ")
-                y = input("Y axis variable: ")
-                return x, y
+                return y
+        elif m == 2:
+            y = input("Variable to test: ")
+            while y not in var_options:
+                print("Invalid input.")
+                print()
+                y = input("Variable to test: ")
+                print()
+            else:
+                return y
 
     print("Welcome to the Beer List Analysis Platform!\n"
           "\n"
@@ -193,7 +220,8 @@ def Beer_List():
 
         #Violin Plot
         def violin():
-            x, y = query(2)
+            x = query(2)
+            y = query_2(1)
             plt.rcParams["figure.figsize"] = [8, 6]
             sns.violinplot(x = x, y = path[y], palette = "bright", data = path)
             plt.xticks([0, 1], ["Negative", "Positive"])
@@ -202,12 +230,13 @@ def Beer_List():
 
         #Scatter Plot
         def scat():
-              x, y = query(2)
-              path.reset_index(inplace = True)
-              plt.rcParams["figure.figsize"] = [6, 6]
-              sns.scatterplot(data = path, x = x, y = y)
-              plt.title(f"{x} by {y}")
-              plt.show()
+            x = query(2)
+            y = query_2(1)
+            path.reset_index(inplace = True)
+            plt.rcParams["figure.figsize"] = [6, 6]
+            sns.scatterplot(data = path, x = x, y = y)
+            plt.title(f"{x} by {y}")
+            plt.show()
 
         #Scatter Matrix
         def scat_mat():
@@ -219,16 +248,28 @@ def Beer_List():
 
         #Contour Plot
         def contour():
-              x, y = query(2)
+            x = query(2)
+            y = query_2(1)
 
-              sns.kdeplot(x = path[x], y = path[y], fill = True, cmap = "viridis")
+            sns.kdeplot(x = path[x], y = path[y], fill = True, cmap = "viridis")
 
-              plt.title(f"Contour Plot of {x} vs. {y}")
-              plt.xlabel(f"{x}")
-              plt.ylabel(f"{y}")
-              plt.show()
+            plt.title(f"Contour Plot of {x} vs. {y}")
+            plt.xlabel(f"{x}")
+            plt.ylabel(f"{y}")
+            plt.show()
 
-        analysis_options = ["1", "2", "3", "4", "5", "6", "7"]
+        #Box Plot
+        def boxen():
+            x = query(3)
+            y = query_2(2)
+            plt.figure(figsize = (8, 6))
+            sns.boxplot(x = x, y = y, data = path)
+            plt.title(f"Box Plot of {y} vs. {x}")
+            plt.xticks([0, 1], ["Not Had", "Had"])
+            plt.ylabel(y)
+            plt.show()
+
+        analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
         def testype():
             test_choice = input("What Beer List data would you like to analyze?\n"
@@ -239,6 +280,7 @@ def Beer_List():
                                 "\"5\" for scatter matrix\n"
                                 "\"6\" for contour plot\n"
                                 "\"7\" for violin plot\n"
+                                "\"8\" for box plot\n"
                                 "Your choice: ")
             print()
 
@@ -252,6 +294,7 @@ def Beer_List():
                                     "\"5\" for scatter matrix\n"
                                     "\"6\" for contour plot\n"
                                     "\"7\" for violin plot\n"
+                                    "\"8\" for box plot\n"
                                     "Your choice: ")
                 print()
             else:
@@ -275,6 +318,9 @@ def Beer_List():
                 elif test_choice == "7":
                     preprocess()
                     violin()
+                elif test_choice == "8":
+                    preprocess()
+                    boxen()
         testype()
 
         print()
