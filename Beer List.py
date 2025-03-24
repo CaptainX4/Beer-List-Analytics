@@ -7,17 +7,21 @@ import urllib.request as urllib2
 import warnings
 warnings.filterwarnings("ignore")
 from io import StringIO
-from sklearn import tree
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
 
 
 def Beer_List():
     var_options = ["Territory", "Brewery", "Beer", "Zak", "Jon", "Had", "Style", "ABV", "SRC"]
+
+    def query(n):
+        if n == 1:
+            x = input("What variable would you like to test? ")
+            return x
+        if n == 2:
+            print("What two variables would you like to test?\n"
+                  "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Zak,\" \"Jon,\" \"Had,\" \"Style,\" \"ABV,\" and \"SRC.\"""")
+            x = input("X axis variable: ")
+            y = input("Y axis variable: ")
+            return x, y
 
     print("Welcome to the Beer List Analysis Platform!\n"
           "\n"
@@ -27,7 +31,7 @@ def Beer_List():
           "Please be patient. You are working with a lot of data. It takes a minute to load.")
     print()
 
-    start = input("Press any key and hit return to continue. ")
+    start = input("Press any key to continue. ")
 
     if len(start) == 0:
         print()
@@ -102,21 +106,18 @@ def Beer_List():
                 path = All
 
         def dis():
-            sns.displot(path["Territory"], kde = True, height = 6, aspect = 50)
-            plt.title("Raw Territory")
-            plt.show()
-
-            sns.displot(path["Been To"], kde = True)
-            plt.show()
-
-            sns.displot(path["Style"], kde = True)
-            plt.show()
-
-            sns.displot(path["Brewery"], kde = True)
-            plt.show()
-
-            # sns.displot(path["Beer"], kde = True)
-            # plt.show()
+              x = query(1)
+              if x == "Territory":
+                     asp = 50
+              else:
+                     asp = 1
+              sns.displot(path[x], kde = True, height = 6, aspect = asp)
+              plt.title(f"Raw {x}")
+              plt.show()
+              preprocess()
+              sns.displot(path[x], kde=True, height=6, aspect=asp)
+              plt.title(f"Processed {x}")
+              plt.show()
 
         def anonymizer(sheet, feat_column):
             alist = sheet[feat_column].unique().tolist()
@@ -130,8 +131,6 @@ def Beer_List():
 
             sheet[feat_column] = sheet[feat_column].map(mapping)
             sheet[feat_column] = sheet[feat_column].astype("Int64")
-            # return mapping
-            # print(mapping)
 
         def preprocess():
             anonymizer(path, "Territory")
@@ -179,41 +178,21 @@ def Beer_List():
 
         #Violin Plot
         def violin():
-            print("What two variables would you like to test?")
-            x = input("X axis variable: ")
-            y = input("Y axis variable: ")
+            x, y = query(2)
             plt.rcParams["figure.figsize"] = [8, 6]
             sns.violinplot(x = x, y = path[y], palette = "bright", data = path)
-            plt.title(f"Violin Plot of {x} vs. {y}")
-            plt.show()
-
-        #Distribution Plot
-        def dis_2():
-            sns.displot(path["Territory"], kde = True)
-            plt.title("Anonymized Territory Data")
-            plt.show()
-
-            sns.displot(path["Brewery"], kde = True)
-            plt.show()
-
-            sns.displot(path["Style"], kde = True)
-            plt.show()
-
-            sns.displot(path["ABV"], kde = True)
+            plt.xticks([0, 1], ["Negative", "Positive"])
+            # plt.title(f"Violin Plot of {column} vs. Outcome")
             plt.show()
 
         #Scatter Plot
         def scat():
-            # scat_opt = ["Territory", "Brewery", "Beer", "Zak,\" \"Jon,\" \"Had,\" \"Style,\" \"ABV,\" and \"SRC.
-            print("What two variables would you like to test?")
-            # scat_var_x = input("X axis variable: ")
-            x = input("X axis variable: ")
-            y = input("Y axis variable: ")
-            path.reset_index(inplace = True)
-            plt.rcParams["figure.figsize"] = [6, 6]
-            sns.scatterplot(data = path, x = x, y = y)
-            plt.title(f"{x} by {y}")
-            plt.show()
+              x, y = query(2)
+              path.reset_index(inplace = True)
+              plt.rcParams["figure.figsize"] = [6, 6]
+              sns.scatterplot(data = path, x = x, y = y)
+              plt.title(f"{x} by {y}")
+              plt.show()
 
         #Scatter Matrix
         def scat_mat():
@@ -225,89 +204,16 @@ def Beer_List():
 
         #Contour Plot
         def contour():
-            print("What two variables would you like to test?")
+              x, y = query(2)
 
-            # getting input and saving it into a variable for labels
-            x_var = input("X axis variable: ")
-            y_var = input("Y axis variable: ")
+              sns.kdeplot(x = path[x], y = path[y], fill = True, cmap = "viridis")
 
-            # taking input and getting the actual data to plot
-            x = path[x_var]
-            y = path[y_var]
+              plt.title(f"Contour Plot of {x} vs. {y}")
+              plt.xlabel(f"{x}")
+              plt.ylabel(f"{y}")
+              plt.show()
 
-            sns.kdeplot(x=x, y=y, fill=True, cmap="viridis")
-
-            plt.title(f"Contour Plot of {x_var} vs. {y_var}")
-            plt.xlabel(x_var)
-            plt.ylabel(y_var)
-            plt.show()
-
-        # Box Plot
-        def box():
-            # print("Would you like to test Jon's data, or Zak's?")
-            JZ = input("Would you like to test Jon's data, or Zak's? ")
-
-            # y = path[input("Y axis variable: ")]
-            # path["Attrition"] = df["Attrition"].apply(lambda x: 1 if x == "Yes" else 0)
-
-            def create_boxplots(path, columns, target = JZ):
-                for col in columns:
-                    plt.figure(figsize = (8, 6))
-                    sns.boxplot(x = target, y = col, data = path)
-                    # plt.title(f"Box Plot of {col} vs. Attrition")
-                    plt.xticks([0, 1], ["No", "Yes"])
-                    plt.ylabel(col)
-                    plt.show()
-
-            columns_to_plot = ["Territory",
-                               "Brewery",
-                               "Had",
-                               "Style",
-                               "ABV",
-                               "SRC"]
-
-            create_boxplots(path, columns_to_plot)
-
-        analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
-        path = path.dropna()
-
-        #Logististic Regression
-        def log_reg():
-            JZ = input("Would you like to test Jon's data, or Zak's? ")
-            down = int(input("How many levels of depth for this model? "))
-
-            x = path[["Territory", "Style", "ABV"]]
-            y = path[JZ]
-
-            X_train, X_test, y_train, y_test = train_test_split(x, y,
-                                                                test_size = 0.3,
-                                                                random_state = 11)
-
-            lr = LogisticRegression()
-
-            lr.fit(X_train,y_train)
-
-            predict = lr.predict(X_test)
-
-            print(pd.DataFrame(confusion_matrix(y_test,predict),
-                               columns = ["Predicted No","Predicted Yes"],
-                               index = ["Actual No", "Actual Yes"]))
-            print(classification_report(y_test,predict))
-
-            y_predict = lr.predict(X_test)
-
-            accuracy = accuracy_score(y_test, y_predict)
-            print("Accuracy:", accuracy)
-
-            dt = DecisionTreeClassifier(max_depth = down)
-            dt_model = dt.fit(X_train, y_train)
-
-            fig = plt.figure(figsize = (10, 8))
-            tree.plot_tree(dt_model,
-                           feature_names = list(x.columns),
-                           class_names = ['Not Had', 'Had'])
-            plt.show()
+        analysis_options = ["1", "2", "3", "4", "5", "6", "7"]
 
         def testype():
             test_choice = input("What Beer List data would you like to analyze?\n"
@@ -318,8 +224,6 @@ def Beer_List():
                                 "\"5\" for scatter matrix\n"
                                 "\"6\" for contour plot\n"
                                 "\"7\" for violin plot\n"
-                                "\"8\" for box plot\n"
-                                "\"9\" for Logistic Regression\n"
                                 "Your choice: ")
             print()
 
@@ -333,15 +237,11 @@ def Beer_List():
                                     "\"5\" for scatter matrix\n"
                                     "\"6\" for contour plot\n"
                                     "\"7\" for violin plot\n"
-                                    "\"8\" for box plot\n"
-                                    "\"9\" for Logistic Regression\n"
                                     "Your choice: ")
                 print()
             else:
                 if test_choice == "1":
                     dis()
-                    preprocess()
-                    dis_2()
                 elif test_choice == "2":
                     preprocess()
                     heat()
@@ -360,11 +260,6 @@ def Beer_List():
                 elif test_choice == "7":
                     preprocess()
                     violin()
-                elif test_choice == "8":
-                    box()
-                elif test_choice == "9":
-                    preprocess()
-                    log_reg()
         testype()
 
         print()
