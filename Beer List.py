@@ -15,13 +15,28 @@ def Beer_List():
     def query(n):
         if n == 1:
             x = input("What variable would you like to test? ")
-            return x
+            while x not in var_options:
+                print("Invalid input.")
+                print()
+                x = input("What variable would you like to test? ")
+                print()
+            else:
+                return x
         if n == 2:
             print("What two variables would you like to test?\n"
                   "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Zak,\" \"Jon,\" \"Had,\" \"Style,\" \"ABV,\" and \"SRC.\"""")
             x = input("X axis variable: ")
             y = input("Y axis variable: ")
-            return x, y
+            while x and y not in var_options:
+                print("One or both of your inputs was invalid.")
+                print()
+                x = input("X axis variable: ")
+                y = input("Y axis variable: ")
+                print()
+            else:
+                x = input("X axis variable: ")
+                y = input("Y axis variable: ")
+                return x, y
 
     print("Welcome to the Beer List Analysis Platform!\n"
           "\n"
@@ -31,7 +46,7 @@ def Beer_List():
           "Please be patient. You are working with a lot of data. It takes a minute to load.")
     print()
 
-    start = input("Press any key to continue. ")
+    start = input("Press any key and hit enter to continue. ")
 
     if len(start) == 0:
         print()
