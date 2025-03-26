@@ -57,56 +57,67 @@ def Beer_List():
     print()
 
     start = input("Press any key and hit enter to continue. ")
-
     if len(start) == 0:
         print()
     else:
         pass
 
-    # Data loading and cleaning remain unchanged
+
+    # Data Loading Helper Function
+    def load_csv_from_url(url):
+        context = ssl.create_default_context(cafile=certifi.where())
+        data = urllib2.urlopen(url, context=context).read()
+        data_str = data.decode("utf-8")
+        return pd.read_csv(StringIO(data_str))
+    
+    # Data Cleaning Functions
+    def clean_unamerican_data(df):
+        cleanup_columns = ["Comments", "Country Total", "Zak Total", "Jon Total", "Maps Link"]
+        df = df.drop(cleanup_columns, axis=1)
+        # Exclude rows with unwanted "Country" values
+        df = df[~df["Country"].isin(["US", "Total: this sheet", "Total: all sheets"])]
+        df = df.dropna(how="all")
+        return df.rename(columns={"Country": "Territory"})
+    
+    def clean_american_data1(df):
+        cleanup_columns = ["Comments", "Zipcode"]
+        df = df.drop(cleanup_columns, axis=1)
+        df = df.drop(df.index[-1])
+        df = df.dropna(how="all")
+        return df.rename(columns={"State": "Territory"})
+    
+    def clean_american_data2(df):
+        cleanup_columns = ["Comments", "Zipcode"]
+        df = df.drop(cleanup_columns, axis=1)
+        # Drop the first row and the last two rows
+        df = df.drop(df.index[0])
+        df = df.drop(df.index[-1])
+        df = df.drop(df.index[-1])
+        df = df.dropna(how="all")
+        return df.rename(columns={"State": "Territory"})
+
+    # URLs for the datasets
     url_unAm = "https://docs.google.com/spreadsheets/d/1W4F-UwW8jNdw9ZjL0hf_P53m6BWKU9Xszwt0a2TiyFU/export?format=csv&gid=0"
     url_Am1 = "https://docs.google.com/spreadsheets/d/1W4F-UwW8jNdw9ZjL0hf_P53m6BWKU9Xszwt0a2TiyFU/export?format=csv&gid=1"
     url_Am2 = "https://docs.google.com/spreadsheets/d/1W4F-UwW8jNdw9ZjL0hf_P53m6BWKU9Xszwt0a2TiyFU/export?format=csv&gid=2"
 
-    context = ssl.create_default_context(cafile=certifi.where())
-    data = urllib2.urlopen(url_unAm, context=context).read()
-    data_str = data.decode("utf-8")
-    Unamerican = pd.read_csv(StringIO(data_str))
-    cleanup_unAm = ["Comments", "Country Total", "Zak Total", "Jon Total", "Maps Link"]
-    Unamerican = Unamerican.drop(cleanup_unAm, axis=1)
-    Unamerican = Unamerican[Unamerican["Country"] != "US"]
-    Unamerican = Unamerican[Unamerican["Country"] != "Total: this sheet"]
-    Unamerican = Unamerican[Unamerican["Country"] != "Total: all sheets"]
-    Unamerican = Unamerican.dropna(how="all")
-    Unamerican = Unamerican.rename(columns={"Country": "Territory"})
+    # Load datasets using the helper
+    Unamerican = load_csv_from_url(url_unAm)
+    Am1_data = load_csv_from_url(url_Am1)
+    Am2_data = load_csv_from_url(url_Am2)
 
-    context = ssl.create_default_context(cafile=certifi.where())
-    data = urllib2.urlopen(url_Am1, context=context).read()
-    data_str = data.decode("utf-8")
-    Am1_data = pd.read_csv(StringIO(data_str))
-    cleanup_Am1 = ["Comments", "Zipcode"]
-    Am1_data = Am1_data.drop(cleanup_Am1, axis=1)
-    Am1_data = Am1_data.drop(Am1_data.index[-1])
-    Am1_data = Am1_data.dropna(how="all")
-    Am1_data = Am1_data.rename(columns={"State": "Territory"})
+    # Clean each dataset using the dedicated cleaning functions
+    Unamerican = clean_unamerican_data(Unamerican)
+    Am1_data = clean_american_data1(Am1_data)
+    Am2_data = clean_american_data2(Am2_data)
 
-    context = ssl.create_default_context(cafile=certifi.where())
-    data = urllib2.urlopen(url_Am2, context=context).read()
-    data_str = data.decode("utf-8")
-    Am2_data = pd.read_csv(StringIO(data_str))
-    cleanup_Am2 = ["Comments", "Zipcode"]
-    Am2_data = Am2_data.drop(cleanup_Am2, axis=1)
-    Am2_data = Am2_data.drop(Am2_data.index[0])
-    Am2_data = Am2_data.drop(Am2_data.index[-1])
-    Am2_data = Am2_data.drop(Am2_data.index[-1])
-    Am2_data = Am2_data.dropna(how="all")
-    Am2_data = Am2_data.rename(columns={"State": "Territory"})
-
+    # Combine datasets for later use
     American = pd.concat([Am1_data, Am2_data], axis=0)
     All = pd.concat([Unamerican, Am1_data, Am2_data], axis=0)
 
-    data_options = ["Unamerican", "American", "All"]
 
+
+    data_options = ["Unamerican", "American", "All"]
     data_choice = input("What Beer List data would you like to analyze?\n"
                         "Options are \"Unamerican,\" \"American,\" and \"All.\"\n"
                         "Your choice: ")
