@@ -62,6 +62,9 @@ def Beer_List():
     else:
         pass
 
+    # ------------------------------
+    # Data Loading and Cleaning
+    # ------------------------------
 
     # Data Loading Helper Function
     def load_csv_from_url(url):
@@ -115,8 +118,6 @@ def Beer_List():
     American = pd.concat([Am1_data, Am2_data], axis=0)
     All = pd.concat([Unamerican, Am1_data, Am2_data], axis=0)
 
-
-
     data_options = ["Unamerican", "American", "All"]
     data_choice = input("What Beer List data would you like to analyze?\n"
                         "Options are \"Unamerican,\" \"American,\" and \"All.\"\n"
@@ -137,103 +138,84 @@ def Beer_List():
         elif data_choice == "All":
             path = All
 
-    def dis():
-        x = query(1)
-        asp = 50 if x == "Territory" else 1
-        sns.displot(path[x], kde=True, height=6, aspect=asp)
-        plt.title(f"Raw {x}")
-        plt.show()
-        preprocess()
-        sns.displot(path[x], kde=True, height=6, aspect=asp)
-        plt.title(f"Processed {x}")
-        plt.show()
+    # ------------------------------
+    # Analysis & Visualization Functions
+    # ------------------------------
 
     def anonymizer(sheet, feat_column):
         alist = sheet[feat_column].unique().tolist()
-
-        def convert_to_incremental(original_list):
-            return list(range(1, len(original_list) + 1))
-
-        incremental_list = convert_to_incremental(alist)
+        incremental_list = list(range(1, len(alist) + 1))
         mapping = dict(zip(alist, incremental_list))
         sheet[feat_column] = sheet[feat_column].map(mapping)
         sheet[feat_column] = sheet[feat_column].astype("Int64")
 
-    def preprocess():
-        anonymizer(path, "Territory")
-        anonymizer(path, "Brewery")
-        anonymizer(path, "Style")
-        anonymizer(path, "Added")
-        anonymizer(path, "SRC")
-        anonymizer(path, "Been To")
+    def preprocess(data):
+        anonymizer(data, "Territory")
+        anonymizer(data, "Brewery")
+        anonymizer(data, "Style")
+        anonymizer(data, "Added")
+        anonymizer(data, "SRC")
+        anonymizer(data, "Been To")
 
-    char_to_remove = "%"
-    path["ABV"] = path["ABV"].str.replace(char_to_remove, '', regex=False)
-    path["ABV"] = path["ABV"].dropna()
-    path["ABV"] = pd.to_numeric(path["ABV"], errors="coerce")
-
-    clean = ["Beer"]
-    path = path.drop(clean, axis=1)
-
-    path["Zak"] = pd.to_numeric(path["Zak"], errors="coerce")
-    path["Zak"] = path["Zak"].astype("Int64")
-    path["Zak"] = path["Zak"].fillna(0)
-
-    path["Jon"] = pd.to_numeric(path["Jon"], errors="coerce")
-    path["Jon"] = path["Jon"].astype("Int64")
-    path["Jon"] = path["Jon"].fillna(0)
-
-    path["Had"] = path["Zak"].astype(str) + path["Jon"].astype(str)
-    path["Had"].replace({"01": 0, "11": 1, "10": 2}, inplace=True)
-
-    def heat():
-        plt.rcParams["figure.figsize"] = [8, 8]
-        sns.heatmap(path.corr(), color="k", annot=True)
+    def plot_distribution(data):
+        x = query(1)
+        asp = 50 if x == "Territory" else 1
+        sns.displot(data[x], kde=True, height=6, aspect=asp)
+        plt.title(f"Raw {x}")
+        plt.show()
+        preprocess(data)
+        sns.displot(data[x], kde=True, height=6, aspect=asp)
+        plt.title(f"Processed {x}")
         plt.show()
 
-    def hist():
+    def plot_heatmap(data):
         plt.rcParams["figure.figsize"] = [8, 8]
-        path.hist()
+        sns.heatmap(data.corr(), color="k", annot=True)
         plt.show()
 
-    def violin():
+    def plot_histogram(data):
+        plt.rcParams["figure.figsize"] = [8, 8]
+        data.hist()
+        plt.show()
+
+    def plot_violin(data):
         x = query(2)
         y = query_2(1)
         plt.rcParams["figure.figsize"] = [8, 6]
-        sns.violinplot(x=x, y=path[y], palette="bright", data=path)
+        sns.violinplot(x=x, y=data[y], palette="bright", data=data)
         plt.xticks([0, 1], ["Negative", "Positive"])
         plt.show()
 
-    def scat():
+    def plot_scatter(data):
         x = query(2)
         y = query_2(1)
-        path.reset_index(inplace=True)
+        data.reset_index(inplace=True)
         plt.rcParams["figure.figsize"] = [6, 6]
-        sns.scatterplot(data=path, x=x, y=y)
+        sns.scatterplot(data=data, x=x, y=y)
         plt.title(f"{x} by {y}")
         plt.show()
 
-    def scat_mat():
-        pd.plotting.scatter_matrix(path[["Territory", "Brewery", "Zak", "Jon", "Style", "SRC", "Been To", "Had"]],
-                                   figsize=(10, 9),
-                                   diagonal="hist",
-                                   marker="o")
+    def plot_scatter_matrix(data):
+        pd.plotting.scatter_matrix(data[["Territory", "Brewery", "Zak", "Jon", "Style", "SRC", "Been To", "Had"]],
+                                     figsize=(10, 9),
+                                     diagonal="hist",
+                                     marker="o")
         plt.show()
 
-    def contour():
+    def plot_contour(data):
         x = query(2)
         y = query_2(1)
-        sns.kdeplot(x=path[x], y=path[y], fill=True, cmap="viridis")
+        sns.kdeplot(x=data[x], y=data[y], fill=True, cmap="viridis")
         plt.title(f"Contour Plot of {x} vs. {y}")
         plt.xlabel(f"{x}")
         plt.ylabel(f"{y}")
         plt.show()
 
-    def boxen():
+    def plot_boxen(data):
         x = query(3)
         y = query_2(2)
         plt.figure(figsize=(8, 6))
-        sns.boxplot(x=x, y=y, data=path)
+        sns.boxplot(x=x, y=y, data=data)
         plt.title(f"Box Plot of {y} vs. {x}")
         plt.xticks([0, 1], ["Not Had", "Had"])
         plt.ylabel(y)
@@ -266,30 +248,30 @@ def Beer_List():
                                 "\"8\" for box plot\n"
                                 "Your choice: ")
             print()
-        else:
-            if test_choice == "1":
-                dis()
-            elif test_choice == "2":
-                preprocess()
-                heat()
-            elif test_choice == "3":
-                preprocess()
-                hist()
-            elif test_choice == "4":
-                preprocess()
-                scat()
-            elif test_choice == "5":
-                preprocess()
-                scat_mat()
-            elif test_choice == "6":
-                preprocess()
-                contour()
-            elif test_choice == "7":
-                preprocess()
-                violin()
-            elif test_choice == "8":
-                preprocess()
-                boxen()
+        if test_choice == "1":
+            plot_distribution(path)
+        elif test_choice == "2":
+            preprocess(path)
+            plot_heatmap(path)
+        elif test_choice == "3":
+            preprocess(path)
+            plot_histogram(path)
+        elif test_choice == "4":
+            preprocess(path)
+            plot_scatter(path)
+        elif test_choice == "5":
+            preprocess(path)
+            plot_scatter_matrix(path)
+        elif test_choice == "6":
+            preprocess(path)
+            plot_contour(path)
+        elif test_choice == "7":
+            preprocess(path)
+            plot_violin(path)
+        elif test_choice == "8":
+            preprocess(path)
+            plot_boxen(path)
+
     testype()
 
     print()
