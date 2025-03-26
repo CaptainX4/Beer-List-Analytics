@@ -272,35 +272,35 @@ def Beer_List():
             preprocess(path)
             plot_boxen(path)
 
-    testype()
+    # ------------------------------
+    # Control Flow
+    # ------------------------------
 
-    print()
+    def run_analysis_session(data):
+        """Run analysis repeatedly until the user is finished with the current dataset."""
+        while True:
+            testype()
+            again = input("Would you like to run another analysis on this data? (y/n) ").lower()
+            while again not in ["y", "n"]:
+                print("Invalid input.")
+                again = input("Would you like to run another analysis on this data? (y/n) ").lower()
+            if again == "n":
+                break
 
-    again_options = ["y", "n"]
-
-    def more():
-        again = input("Would you like to run another analysis on this data? (y/n) ")
-        while again not in again_options:
+    def ask_restart():
+        """Ask whether to load different data or quit, and return the decision."""
+        choice = input("Would you like to load different beer data or quit? (restart/quit) ").lower()
+        while choice not in ["restart", "quit"]:
             print("Invalid input.")
-            again = input("Would you like to run another analysis on this data? (y/n) ")
-            print()
-        else:
-            if again == "y":
-                testype()
-                more()
-            elif again == "n":
-                tier2 = ["restart", "quit"]
-                def tier_2():
-                    restart = input("Would you like to load different beer data or quit? (restart/quit) ")
-                    while restart not in tier2:
-                        print("Invalid input.")
-                        restart = input("Would you like to load different beer data or quit? (restart/quit) ")
-                    else:
-                        if restart == "restart":
-                            Beer_List()
-                        else:
-                            exit()
-                tier_2()
-    more()
+            choice = input("Would you like to load different beer data or quit? (restart/quit) ").lower()
+        return choice
+
+    # Run an analysis session on the chosen dataset, then ask whether to restart or quit.
+    run_analysis_session(path)
+    decision = ask_restart()
+    if decision == "restart":
+        Beer_List()
+    else:
+        exit()
 
 Beer_List()
