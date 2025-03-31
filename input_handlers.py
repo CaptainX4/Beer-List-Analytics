@@ -20,6 +20,8 @@ def query(n):
         print("Pick a drinker (Jon or Zak) and a variable you'd like to test against.\n"
               "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Style,\" \"ABV,\" and \"SRC.\"")
         return get_valid_input("Who's drinking? ", var_options)
+    elif n == 4:
+        return get_valid_input("Who's drinking, Jon or Zak? ", var_options)
 
 def query_2(m):
     if m == 1:
