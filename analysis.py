@@ -18,6 +18,25 @@ def preprocess(data):
     anonymizer(data, "Added")
     anonymizer(data, "SRC")
     anonymizer(data, "Been To")
+    
+    char_to_remove = "%"
+    data["ABV"] = data["ABV"].str.replace(char_to_remove, '', regex=False)
+    data["ABV"] = data["ABV"].dropna()
+    data["ABV"] = pd.to_numeric(data["ABV"], errors="coerce")
+
+    clean = ["Beer"]
+    data.drop(clean, axis=1, inplace=True)
+
+    data["Zak"] = pd.to_numeric(data["Zak"], errors="coerce")
+    data["Zak"] = data["Zak"].astype("Int64")
+    data["Zak"] = data["Zak"].fillna(0)
+
+    data["Jon"] = pd.to_numeric(data["Jon"], errors="coerce")
+    data["Jon"] = data["Jon"].astype("Int64")
+    data["Jon"] = data["Jon"].fillna(0)
+
+    data["Had"] = data["Zak"].astype(str) + data["Jon"].astype(str)
+    data["Had"].replace({"01": 0, "11": 1, "10": 2}, inplace=True)
 
 def plot_distribution(data):
     x = query(1)
