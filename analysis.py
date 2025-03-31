@@ -71,7 +71,7 @@ def plot_violin(data):
 def plot_scatter(data):
     x = query(2)
     y = query_2(1)
-    data.reset_index(inplace=True)
+    data = data.reset_index(drop=True)
     plt.rcParams["figure.figsize"] = [6, 6]
     sns.scatterplot(data=data, x=x, y=y)
     plt.title(f"{x} by {y}")
