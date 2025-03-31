@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from input_handlers import query, query_2  # Import from input_handlers if needed
+from sklearn import tree
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
 
 def anonymizer(sheet, feat_column):
     alist = sheet[feat_column].unique().tolist()
@@ -10,6 +16,8 @@ def anonymizer(sheet, feat_column):
     mapping = dict(zip(alist, incremental_list))
     sheet[feat_column] = sheet[feat_column].map(mapping)
     sheet[feat_column] = sheet[feat_column].astype("Int64")
+    sheet[feat_column] = sheet[feat_column].dropna()
+
 
 def preprocess(data):
     anonymizer(data, "Territory")
@@ -18,7 +26,7 @@ def preprocess(data):
     anonymizer(data, "Added")
     anonymizer(data, "SRC")
     anonymizer(data, "Been To")
-    
+
     char_to_remove = "%"
     data["ABV"] = data["ABV"].str.replace(char_to_remove, '', regex=False)
     data["ABV"] = data["ABV"].dropna()
@@ -37,6 +45,8 @@ def preprocess(data):
 
     data["Had"] = data["Zak"].astype(str) + data["Jon"].astype(str)
     data["Had"].replace({"01": 0, "11": 1, "10": 2}, inplace=True)
+    # data = data.dropna()
+
 
 def plot_distribution(data):
     x = query(1)
@@ -49,15 +59,18 @@ def plot_distribution(data):
     plt.title(f"Processed {x}")
     plt.show()
 
+
 def plot_heatmap(data):
     plt.rcParams["figure.figsize"] = [8, 8]
     sns.heatmap(data.corr(), color="k", annot=True)
     plt.show()
 
+
 def plot_histogram(data):
     plt.rcParams["figure.figsize"] = [8, 8]
     data.hist()
     plt.show()
+
 
 def plot_violin(data):
     x = query(2)
@@ -68,6 +81,7 @@ def plot_violin(data):
     plt.xticks([0, 1], ["Negative", "Positive"])
     plt.show()
 
+
 def plot_scatter(data):
     x = query(2)
     y = query_2(1)
@@ -77,12 +91,14 @@ def plot_scatter(data):
     plt.title(f"{x} by {y}")
     plt.show()
 
+
 def plot_scatter_matrix(data):
     pd.plotting.scatter_matrix(data[["Territory", "Brewery", "Zak", "Jon", "Style", "SRC", "Been To", "Had"]],
-                                 figsize=(10, 9),
-                                 diagonal="hist",
-                                 marker="o")
+                               figsize=(10, 9),
+                               diagonal="hist",
+                               marker="o")
     plt.show()
+
 
 def plot_contour(data):
     x = query(2)
@@ -93,6 +109,7 @@ def plot_contour(data):
     plt.ylabel(f"{y}")
     plt.show()
 
+
 def plot_boxen(data):
     x = query(3)
     y = query_2(2)
@@ -101,4 +118,40 @@ def plot_boxen(data):
     plt.title(f"Box Plot of {y} vs. {x}")
     plt.xticks([0, 1], ["Not Had", "Had"])
     plt.ylabel(y)
+    plt.show()
+
+
+def log_tree(data):
+    data = data.dropna()
+    X = data[["ABV", "Territory", "Style"]]
+    y = data[query(3)]
+    deep = int(input("How many levels would you like the tree to be?\n"
+                     "Note: Too many layers can create overfitting of data.\n"
+                     "Too few can lead to underfitting. Number of layers: "))
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                        test_size=0.3,
+                                                        random_state=0)
+
+    model = LogisticRegression()
+
+    model.fit(X_train, y_train)
+
+    predict = model.predict(X_test)
+
+    print(pd.DataFrame(confusion_matrix(y_test, predict),
+                       columns=["Predicted No", "Predicted Yes"],
+                       index=["Actual No", "Actual Yes"]))
+    print(classification_report(y_test, predict))
+
+    accuracy = accuracy_score(y_test, predict)
+    print("Accuracy:", accuracy)
+
+    dt = DecisionTreeClassifier(max_depth=deep)
+    dt_model = dt.fit(X_train, y_train)
+
+    fig = plt.figure(figsize=(10, 8))
+    tree.plot_tree(dt_model,
+                   feature_names=list(X.columns),
+                   class_names=["Not Had", "Had"])
     plt.show()
