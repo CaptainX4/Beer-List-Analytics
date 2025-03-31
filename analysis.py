@@ -124,7 +124,7 @@ def plot_boxen(data):
 def log_tree(data):
     data = data.dropna()
     X = data[["ABV", "Territory", "Style"]]
-    y = data[query(3)]
+    y = data[query(4)]
     deep = int(input("How many levels would you like the tree to be?\n"
                      "Note: Too many layers can create overfitting of data.\n"
                      "Too few can lead to underfitting. Number of layers: "))
