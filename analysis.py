@@ -63,7 +63,8 @@ def plot_violin(data):
     x = query(2)
     y = query_2(1)
     plt.rcParams["figure.figsize"] = [8, 6]
-    sns.violinplot(x=x, y=data[y], palette="bright", data=data)
+    data = data.reset_index(drop=True)  # Reset index to ensure uniqueness
+    sns.violinplot(x=x, y=y, palette="bright", data=data)
     plt.xticks([0, 1], ["Negative", "Positive"])
     plt.show()
 
