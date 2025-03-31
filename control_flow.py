@@ -1,9 +1,9 @@
 # control_flow.py
 from analysis import (plot_distribution, plot_heatmap, plot_histogram, plot_violin,
-                      plot_scatter, plot_scatter_matrix, plot_contour, plot_boxen, preprocess)
+                      plot_scatter, plot_scatter_matrix, plot_contour, plot_boxen, preprocess, log_tree)
 from input_handlers import query, query_2
 
-analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8"]
+analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 def testype(path):
     test_choice = input("What Beer List data would you like to analyze?\n"
@@ -15,6 +15,7 @@ def testype(path):
                          "\"6\" for contour plot\n"
                          "\"7\" for violin plot\n"
                          "\"8\" for box plot\n"
+                         "\"9\" for logistic regression with decision tree\n"
                          "Your choice: ")
     print()
     while test_choice not in analysis_options:
@@ -28,6 +29,7 @@ def testype(path):
                             "\"6\" for contour plot\n"
                             "\"7\" for violin plot\n"
                             "\"8\" for box plot\n"
+                            "\"9\" for logistic regression with decision tree\n"
                             "Your choice: ")
         print()
     if test_choice == "1":
@@ -53,6 +55,9 @@ def testype(path):
     elif test_choice == "8":
         preprocess(path)
         plot_boxen(path)
+    elif test_choice == "9":
+        preprocess(path)
+        log_tree(path)
 
 def run_analysis_session(path):
     while True:
