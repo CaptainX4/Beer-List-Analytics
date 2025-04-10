@@ -34,7 +34,6 @@ def collect_responses():
           "number separated by commas.\n"
           "1: Territory, 2: Brewery, 3: Beer, 4: Zak, 5: Jon, 6: Had, 7: Style, 8: ABV, 9: SRC")
 
-    var_options = ["Territory", "Brewery", "Beer", "Zak", "Jon", "Had", "Style", "ABV", "SRC"]
     choices = input("Which variables are we testing? ")
 
     listified = [item.strip() for item in choices.split(",")]
@@ -44,10 +43,7 @@ def collect_responses():
     selected_vars = []
     for z in listified:
         user_choice = var_options[z]
-        # print(user_choice, end=" ")
         selected_vars.append(user_choice)
 
-    print()  # for newline after printed list
+    print()
     return selected_vars
-
-# selected = collect_responses()

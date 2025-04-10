@@ -33,6 +33,7 @@ def testype(path):
                             "Your choice: ")
         print()
     if test_choice == "1":
+        preprocess(path)
         plot_distribution(path)
     elif test_choice == "2":
         preprocess(path)
