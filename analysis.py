@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from input_handlers import query, query_2  # Import from input_handlers if needed
+from input_handlers import query, query_2, collect_responses  # Import from input_handlers if needed
 from sklearn import tree
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
@@ -123,7 +123,7 @@ def plot_boxen(data):
 
 def log_tree(data):
     data = data.dropna()
-    X = data[["ABV", "Territory", "Style"]]
+    X = data[collect_responses()]
     y = data[query(4)]
     deep = int(input("How many levels would you like the tree to be?\n"
                      "Note: Too many layers can create overfitting of data.\n"
