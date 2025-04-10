@@ -28,3 +28,26 @@ def query_2(m):
         return get_valid_input("Y axis variable: ", var_options)
     elif m == 2:
         return get_valid_input("Variable to test: ", var_options)
+
+def collect_responses():
+    print("Choose any three variables in the list below by entering their corresponding\n"
+          "number separated by commas.\n"
+          "1: Territory, 2: Brewery, 3: Beer, 4: Zak, 5: Jon, 6: Had, 7: Style, 8: ABV, 9: SRC")
+
+    var_options = ["Territory", "Brewery", "Beer", "Zak", "Jon", "Had", "Style", "ABV", "SRC"]
+    choices = input("Which variables are we testing? ")
+
+    listified = [item.strip() for item in choices.split(",")]
+    for i in range(len(listified)):
+        listified[i] = int(listified[i]) - 1
+
+    selected_vars = []
+    for z in listified:
+        user_choice = var_options[z]
+        # print(user_choice, end=" ")
+        selected_vars.append(user_choice)
+
+    print()  # for newline after printed list
+    return selected_vars
+
+# selected = collect_responses()
