@@ -23,9 +23,10 @@ def preprocess(data):
     anonymizer(data, "Territory")
     anonymizer(data, "Brewery")
     anonymizer(data, "Style")
-    anonymizer(data, "Added")
+    # anonymizer(data, "Added")
     anonymizer(data, "SRC")
     anonymizer(data, "Been To")
+
 
     char_to_remove = "%"
     data["ABV"] = data["ABV"].str.replace(char_to_remove, '', regex=False)
@@ -45,6 +46,7 @@ def preprocess(data):
 
     data["Had"] = data["Zak"].astype(str) + data["Jon"].astype(str)
     data["Had"].replace({"01": 0, "11": 1, "10": 2}, inplace=True)
+    data["Added"] = pd.to_datetime(data["Added"], dayfirst=False, errors='coerce')
     # data = data.dropna()
 
 
@@ -93,7 +95,7 @@ def plot_scatter(data):
 
 
 def plot_scatter_matrix(data):
-    pd.plotting.scatter_matrix(data[["Territory", "Brewery", "Zak", "Jon", "Style", "SRC", "Been To", "Had"]],
+    pd.plotting.scatter_matrix(data[["Territory", "Brewery", "Zak", "Jon", "Style", "Added", "SRC", "Been To", "Had"]],
                                figsize=(10, 9),
                                diagonal="hist",
                                marker="o")
@@ -125,6 +127,7 @@ def log_tree(data):
     data = data.dropna()
     X = data[collect_responses()]
     y = data[query(4)]
+    print()
     deep = int(input("How many levels would you like the tree to be?\n"
                      "Note: Too many layers can create overfitting of data.\n"
                      "Too few can lead to underfitting. Number of layers: "))
