@@ -75,6 +75,9 @@ def plot_histogram(data):
 
 
 def plot_violin(data):
+    print("For x, ", end="")
+    collect_responses(1, "4,5,6,9")
+    print()
     x = query(2)
     y = query_2(1)
     plt.rcParams["figure.figsize"] = [8, 6]
@@ -126,7 +129,7 @@ def plot_boxen(data):
 
 def log_tree(data):
     data = data.dropna()
-    X = data[collect_responses()]
+    X = data[collect_responses(0,"")]
     y = data[query(4)]
     print()
     deep = int(input("How many levels would you like the tree to be?\n"
