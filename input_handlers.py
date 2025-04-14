@@ -29,13 +29,16 @@ def query_2(m):
     elif m == 2:
         return get_valid_input("Variable to test: ", var_options)
 
-def collect_responses():
-    print("Choose any three variables in the list below by entering their corresponding\n"
-          "number separated by commas.\n"
-          "1: Territory, 2: Brewery, 3: Beer, 4: Zak, 5: Jon, 6: Had, 7: Style, 8: ABV, 9: Added, 10: SRC")
 
-    choices = input("Which variables are we testing? ")
-
+def collect_responses(b, best_data_options):
+    var_options = ["Territory", "Brewery", "Beer", "Zak", "Jon", "Had", "Style", "ABV", "SRC"]
+    if b == 0:
+        print("Choose any three variables in the list below by entering their corresponding\n"
+              "number separated by commas.\n"
+              "1: Territory, 2: Brewery, 3: Beer, 4: Zak, 5: Jon, 6: Had, 7: Style, 8: ABV, 9: SRC")
+        choices = input("Which variables are we testing? ")
+    elif b == 1:
+        choices = best_data_options  # Add before this function for every analysis
     listified = [item.strip() for item in choices.split(",")]
     for i in range(len(listified)):
         listified[i] = int(listified[i]) - 1
@@ -45,5 +48,10 @@ def collect_responses():
         user_choice = var_options[z]
         selected_vars.append(user_choice)
 
-    print()
-    return selected_vars
+    print()  # for newline after printed list
+
+    if b == 0:
+        return selected_vars
+        # print(selected_vars)
+    elif b == 1:
+        print(f"the best variables to use are: {selected_vars}")
