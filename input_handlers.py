@@ -11,7 +11,8 @@ def get_valid_input(prompt, valid_options):
 
 def query(n):
     if n == 1:
-        return get_valid_input("What variable would you like to test? ", var_options)
+        return get_valid_input("What variable would you like to test?\n"
+                               """Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Style,\" \"ABV,\" \"Added,\" and \"SRC.\" Your choice? """, var_options)
     elif n == 2:
         print("What two variables would you like to test?\n"
               "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Zak,\" \"Jon,\" \"Had,\" \"Style,\" \"ABV,\" \"Added,\" and \"SRC.\"")
