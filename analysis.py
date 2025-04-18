@@ -109,7 +109,7 @@ def plot_scatter_matrix(data):
 def plot_contour(data):
     x = query(2)
     y = query_2(1)
-    sns.kdeplot(x=data[x], y=data[y], fill=True, cmap="viridis")
+    sns.kdeplot(x = data[x], y = data[y], fill = True, cmap = "viridis")
     plt.title(f"Contour Plot of {x} vs. {y}")
     plt.xlabel(f"{x}")
     plt.ylabel(f"{y}")

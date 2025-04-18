@@ -6,8 +6,10 @@ from input_handlers import query, query_2
 analysis_options = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 def testype(path):
+    print()
     test_choice = input("What Beer List data would you like to analyze?\n"
-                         "Options are: \"1\" for distribution plot\n"
+                         "Options are:\n"
+                         "\"1\" for distribution plot\n"
                          "\"2\" for heatmap\n"
                          "\"3\" for histogram\n"
                          "\"4\" for scatter plot\n"
@@ -21,7 +23,8 @@ def testype(path):
     while test_choice not in analysis_options:
         print("Invalid input.")
         test_choice = input("What Beer List data would you like to analyze?\n"
-                            "Options are: \"1\" for distribution plot\n"
+                            "Options are:\n"
+                            "\"1\" for distribution plot\n"
                             "\"2\" for heatmap\n"
                             "\"3\" for histogram\n"
                             "\"4\" for scatter plot\n"

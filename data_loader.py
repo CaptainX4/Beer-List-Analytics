@@ -20,8 +20,8 @@ def clean_american_data1(df):
     cleanup_columns = ["Comments", "Zipcode"]
     df = df.drop(cleanup_columns, axis=1)
     df = df.drop(df.index[-1])
-    df = df.dropna(how="all")
-    return df.rename(columns={"State": "Territory"})
+    df = df.dropna(how = "all")
+    return df.rename(columns = {"State": "Territory"})
 
 def clean_american_data2(df):
     cleanup_columns = ["Comments", "Zipcode"]

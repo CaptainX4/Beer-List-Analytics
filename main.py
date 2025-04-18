@@ -8,13 +8,15 @@ import pandas as pd
 
 def Beer_List():
     # Initial welcome message and prompt
-    print("Welcome to the Beer List Analysis Platform!\n"
+    print()
+    print("\033[1mWelcome to the Beer List Analysis Platform!\033[0m\n"
           "\n"
           "Note, for tests that ask what variable you want to use, choices are:\n"
           "\"Territory,\" \"Brewery,\" \"Beer,\" \"Zak,\" \"Jon,\" \"Had,\" \"Style,\" \"ABV,\" and \"SRC.\"\n"
           "Depending on the analysis, some of these variables will not work.\n"
           "Please be patient. You are working with a lot of data. It takes a minute to load.\n")
-    input("Press any key and hit enter to continue. ")
+    input("Press any key and hit enter to continue: ")
+    print()
 
     # URLs for the datasets
     url_unAm = "https://docs.google.com/spreadsheets/d/1W4F-UwW8jNdw9ZjL0hf_P53m6BWKU9Xszwt0a2TiyFU/export?format=csv&gid=0"

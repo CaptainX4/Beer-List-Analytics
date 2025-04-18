@@ -1,6 +1,7 @@
 # input_handlers.py
 
 var_options = ["Territory", "Brewery", "Beer", "Zak", "Jon", "Had", "Style", "ABV", "Added", "SRC"]
+drinker = ["Zak", "Jon", "Both"]
 
 def get_valid_input(prompt, valid_options):
     response = input(prompt)
@@ -12,7 +13,8 @@ def get_valid_input(prompt, valid_options):
 def query(n):
     if n == 1:
         return get_valid_input("What variable would you like to test?\n"
-                               """Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Style,\" \"ABV,\" \"Added,\" and \"SRC.\" Your choice? """, var_options)
+                               "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Style,\" \"ABV,\" \"Added,\" and \"SRC.\" \n"
+                               "Your choice? ", var_options)
     elif n == 2:
         print("What two variables would you like to test?\n"
               "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Zak,\" \"Jon,\" \"Had,\" \"Style,\" \"ABV,\" \"Added,\" and \"SRC.\"")
@@ -20,9 +22,9 @@ def query(n):
     elif n == 3:
         print("Pick a drinker (Jon or Zak) and a variable you'd like to test against.\n"
               "Options are \"Territory,\" \"Brewery,\" \"Beer,\" \"Style,\" \"ABV,\" \"Added,\" and \"SRC.\"")
-        return get_valid_input("Who's drinking? ", var_options)
+        return get_valid_input("Who's drinking? ", drinker)
     elif n == 4:
-        return get_valid_input("Who's drinking, Jon or Zak? ", var_options)
+        return get_valid_input("Who's drinking, Jon or Zak? ", drinker)
 
 def query_2(m):
     if m == 1:
