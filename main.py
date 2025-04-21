@@ -6,9 +6,16 @@ from data_loader import load_csv_from_url, clean_unamerican_data, clean_american
 from control_flow import run_analysis_session, ask_restart
 import pandas as pd
 
+
+Beer_text = "\033[32m\033[1m"
+Jon_text = "\033[31m\033[1m"
+Zak_text = "\033[34m\033[1m"
+UNDER = "\033[4m"
+RESET = "\033[0m"
+
 def Beer_List():
     print()
-    print("\033[1mWelcome to the Beer List Analysis Platform!\033[0m\n"
+    print(f"{Beer_text}{UNDER}Welcome to the Beer List Analysis Platform!{RESET}\n"
           "\n"
           "We're dealing with a lot of data. Please be patient;\n"
           "it might take a minute to load.\n")
@@ -38,11 +45,8 @@ def Beer_List():
     American = pd.concat([Am1_data, Am2_data], axis=0)
     All = pd.concat([Unamerican, Am1_data, Am2_data], axis=0)
 
-    # print()
-    # print("\033[1mWelcome to the Beer List Analysis Platform!\033[0m\n"
-    #       "\n"
-    print(f"There are currently \033[1m{total_total:,}\033[0m beers on the list.\n"
-          f"Jon has had \033[1m{Jon_total:,}\033[0m, and Zak has had \033[1m{Zak_total:,}\033[0m.\n")
+    print(f"There are currently {Beer_text}{total_total:,}{RESET} beers on the list.\n"
+          f"{Jon_text}Jon{RESET} has had {Jon_text}{Jon_total:,}{RESET} beers, and {Zak_text}Zak{RESET} has had {Zak_text}{Zak_total:,}{RESET}.\n")
     input("Press any key and hit enter to continue: ")
     print()
 
