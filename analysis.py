@@ -51,14 +51,8 @@ def preprocess(data):
 
 
 def plot_distribution(data):
-    x = query(1)
-    asp = 50 if x == "Territory" else 1
-    sns.displot(data[x], kde=True, height=6, aspect=asp)
-    plt.title(f"Raw {x}")
-    plt.show()
-    preprocess(data)
-    sns.displot(data[x], kde=True, height=6, aspect=asp)
-    plt.title(f"Processed {x}")
+    asp = 3
+    sns.displot(data[collect_responses(0,"")], kde=True, height=6, aspect=asp)
     plt.show()
 
 
@@ -70,21 +64,7 @@ def plot_heatmap(data):
 
 def plot_histogram(data):
     plt.rcParams["figure.figsize"] = [8, 8]
-    data.hist()
-    plt.show()
-
-
-def plot_violin(data):
-    print("For x, ", end="")
-    collect_responses(1, "4,5,6,9")
-    print()
-    x = query(2)
-    y = query_2(1)
-    plt.rcParams["figure.figsize"] = [8, 6]
-    num_ticks = len(data[x].values.unique())
-    plt.locator_params(axis='x', nbins=num_ticks)
-    data = data.reset_index(drop=True)  # Reset index to ensure uniqueness
-    sns.violinplot(x=x, y=y, palette="bright", data=data)
+    data[collect_responses(0,"")].hist()
     plt.show()
 
 
@@ -99,10 +79,11 @@ def plot_scatter(data):
 
 
 def plot_scatter_matrix(data):
-    pd.plotting.scatter_matrix(data[["Territory", "Brewery", "Zak", "Jon", "Style", "Added", "SRC", "Been To", "Had"]],
-                               figsize=(10, 9),
-                               diagonal="hist",
-                               marker="o")
+    pd.plotting.scatter_matrix(
+        data[["Territory", "Brewery", "Zak", "Jon", "Style", "Added", "SRC", "Been To", "Had"]],
+        figsize=(10, 9),
+        diagonal="hist",
+        marker="o")
     plt.show()
 
 
@@ -113,6 +94,20 @@ def plot_contour(data):
     plt.title(f"Contour Plot of {x} vs. {y}")
     plt.xlabel(f"{x}")
     plt.ylabel(f"{y}")
+    plt.show()
+
+
+def plot_violin(data):
+    print("For x, ", end="")
+    collect_responses(1, "4,5,6,9")
+    print()
+    x = query(2)
+    y = query_2(1)
+    plt.rcParams["figure.figsize"] = [8, 6]
+    num_ticks = len(data[x].values.unique())
+    plt.locator_params(axis='x', nbins=num_ticks)
+    data = data.reset_index(drop=True)  # Reset index to ensure uniqueness
+    sns.violinplot(x=x, y=y, palette="bright", data=data)
     plt.show()
 
 
@@ -157,7 +152,7 @@ def log_tree(data):
     dt = DecisionTreeClassifier(max_depth=deep)
     dt_model = dt.fit(X_train, y_train)
 
-    fig = plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(10, 8))
     tree.plot_tree(dt_model,
                    feature_names=list(X.columns),
                    class_names=["Not Had", "Had"])
