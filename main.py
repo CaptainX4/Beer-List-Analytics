@@ -1,7 +1,6 @@
 # main.py
 import warnings
 warnings.filterwarnings("ignore")
-
 from data_loader import load_csv_from_url, clean_unamerican_data, clean_american_data1, clean_american_data2
 from control_flow import run_analysis_session, ask_restart
 import pandas as pd
