@@ -2,3 +2,8 @@
 __pycache__/
 __pycache__/*
 *.py[cod]
+__pycache__/analysis.cpython-313.pyc
+.gitignore
+.gitignore
+__pycache__/input_handlers.cpython-313.pyc
+.gitignore

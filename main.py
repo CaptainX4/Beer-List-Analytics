@@ -1,7 +1,7 @@
 # main.py
 import warnings
 warnings.filterwarnings("ignore")
-from data_loader import load_csv_from_url, clean_unamerican_data, clean_american_data1, clean_american_data2
+from data_loader import load_csv_from_url, clean_unamerican_data, clean_american_data
 from control_flow import run_analysis_session, ask_restart
 import pandas as pd
 
@@ -37,8 +37,8 @@ def Beer_List():
 
     # Clean datasets
     Unamerican = clean_unamerican_data(Unamerican)
-    Am1_data = clean_american_data1(Am1_data)
-    Am2_data = clean_american_data2(Am2_data)
+    Am1_data = clean_american_data(Am1_data, drop_last_rows=4)
+    Am2_data = clean_american_data(Am2_data, subset_filter="Been To")
 
     # Combine datasets
     American = pd.concat([Am1_data, Am2_data], axis=0)
