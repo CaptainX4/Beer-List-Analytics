@@ -82,14 +82,14 @@ def Beer_List():
         df = df.dropna(how="all")
         return df.rename(columns={"Country": "Territory"})
     
-    def clean_american_data1(df):
+    def clean_american_data(df, drop_last_rows=4):
         cleanup_columns = ["Comments", "Zipcode"]
         df = df.drop(cleanup_columns, axis=1)
         df = df.drop(df.index[-1])
         df = df.dropna(how="all")
         return df.rename(columns={"State": "Territory"})
     
-    def clean_american_data2(df):
+    def clean_american_data(df, subset_filter="Been To"):
         cleanup_columns = ["Comments", "Zipcode"]
         df = df.drop(cleanup_columns, axis=1)
         # Drop the first row and the last two rows
@@ -109,10 +109,10 @@ def Beer_List():
     Am1_data = load_csv_from_url(url_Am1)
     Am2_data = load_csv_from_url(url_Am2)
 
-    # Clean each dataset using the dedicated cleaning functions
+    # Clean each dataset using the updated cleaning functions
     Unamerican = clean_unamerican_data(Unamerican)
-    Am1_data = clean_american_data1(Am1_data)
-    Am2_data = clean_american_data2(Am2_data)
+    Am1_data = clean_american_data(Am1_data, drop_last_rows=4)
+    Am2_data = clean_american_data(Am2_data, subset_filter="Been To")
 
     # Combine datasets for later use
     American = pd.concat([Am1_data, Am2_data], axis=0)
