@@ -38,7 +38,7 @@ def Beer_List():
     # Clean datasets
     Unamerican = clean_unamerican_data(Unamerican)
     Am1_data = clean_american_data(Am1_data, drop_last_rows=4)
-    Am2_data = clean_american_data(Am2_data, subset_filter="Been To")
+    Am2_data = clean_american_data(Am2_data)
 
     # Combine datasets
     American = pd.concat([Am1_data, Am2_data], axis=0)
