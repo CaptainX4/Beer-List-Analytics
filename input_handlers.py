@@ -53,8 +53,4 @@ def collect_responses(b, best_data_options):
 
     print()  # for newline after printed list
 
-    if b == 0:
-        return selected_vars
-        # print(selected_vars)
-    elif b == 1:
-        print(f"the best variables to use are: {selected_vars}")
+    return selected_vars
