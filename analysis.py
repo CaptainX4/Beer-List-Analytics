@@ -98,8 +98,14 @@ def plot_contour(data):
 
 
 def plot_violin(data):
-    print("For x, ", end="")
-    collect_responses(1, "4,5,6,9")
+    textify = collect_responses(1, "4,5,6,9")
+
+    def list_to_string(arg, separator=""):
+
+        return separator.join(map(str, textify))
+
+    var_string = list_to_string(textify, ", ")
+    print(f"For x, the best variables to use are {var_string}.")
     print()
     x = query(2)
     y = query_2(1)
