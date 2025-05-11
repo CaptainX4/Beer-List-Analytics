@@ -35,33 +35,31 @@ def testype(path):
                             "\"9\" for logistic regression with decision tree\n"
                             "Your choice: ")
         print()
+    
+    # Make a copy of the data to avoid modifying the original
+    data_copy = path.copy()
+    
+    # Preprocess the data and get the processed version
+    processed_data = preprocess(data_copy)
+    
     if test_choice == "1":
-        preprocess(path)
-        plot_distribution(path)
+        plot_distribution(processed_data)
     elif test_choice == "2":
-        preprocess(path)
-        plot_heatmap(path)
+        plot_heatmap(processed_data)
     elif test_choice == "3":
-        preprocess(path)
-        plot_histogram(path)
+        plot_histogram(processed_data)
     elif test_choice == "4":
-        preprocess(path)
-        plot_scatter(path)
+        plot_scatter(processed_data)
     elif test_choice == "5":
-        preprocess(path)
-        plot_scatter_matrix(path)
+        plot_scatter_matrix(processed_data)
     elif test_choice == "6":
-        preprocess(path)
-        plot_contour(path)
+        plot_contour(processed_data)
     elif test_choice == "7":
-        preprocess(path)
-        plot_violin(path)
+        plot_violin(processed_data)
     elif test_choice == "8":
-        preprocess(path)
-        plot_boxen(path)
+        plot_boxen(processed_data)
     elif test_choice == "9":
-        preprocess(path)
-        log_tree(path)
+        log_tree(processed_data)
 
 def run_analysis_session(path):
     while True:
