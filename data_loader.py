@@ -27,7 +27,7 @@ def load_csv_from_url(url: str) -> pd.DataFrame:
 def clean_unamerican_data(df: pd.DataFrame) -> pd.DataFrame:
     df = replace_missing_added(df)
     df = drop_columns(df, UNAMERICAN_DROP_COLUMNS)
-    df = df.dropna(subset=["Brewery"], how='all')
+    df = df.dropna(subset=["Brewery"], how="all")
     df = drop_empty_rows(df)
     return df.rename(columns={"Country": "Territory"})
 
@@ -37,6 +37,6 @@ def clean_american_data(df: pd.DataFrame, drop_last_rows: int = 0, subset_filter
     for _ in range(drop_last_rows):
         df = df.drop(df.index[-1])
     if subset_filter:
-        df = df.dropna(subset=[subset_filter], how='all')
+        df = df.dropna(subset=[subset_filter], how="all")
     df = drop_empty_rows(df)
     return df.rename(columns={"State": "Territory"})
