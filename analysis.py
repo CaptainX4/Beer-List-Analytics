@@ -10,77 +10,65 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
 
+# Global dictionary to store mappings
+LABEL_MAPPINGS = {}
+
+
 def anonymizer(sheet, feat_column):
-    # Create the mapping as before
+    """
+    Anonymize a column but keep track of the original values.
+    
+    Parameters:
+    sheet: DataFrame containing the data
+    feat_column: Column name to anonymize
+    
+    Returns:
+    sheet: The DataFrame with anonymized values
+    """
+    # Skip if column doesn't exist
+    if feat_column not in sheet.columns:
+        return sheet
+    
+    # Get unique values
     alist = sheet[feat_column].unique().tolist()
+    alist = [x for x in alist if pd.notna(x)]  # Filter out NA values
+    
+    if len(alist) == 0:
+        return sheet
+    
+    # Create mapping
     incremental_list = list(range(1, len(alist) + 1))
     mapping = dict(zip(alist, incremental_list))
     reverse_mapping = dict(zip(incremental_list, alist))
     
-    # Store the mapping as an attribute of the dataframe
-    if not hasattr(sheet, 'value_mappings'):
-        sheet.value_mappings = {}
+    # Store the mapping in the global dictionary
+    LABEL_MAPPINGS[feat_column] = mapping
+    LABEL_MAPPINGS[f"{feat_column}_reverse"] = reverse_mapping
     
-    # Store both forward and reverse mappings
-    sheet.value_mappings[feat_column] = mapping
-    sheet.value_mappings[f"{feat_column}_reverse"] = reverse_mapping
-    
-    # Map values to their anonymized versions
+    # Apply mapping
     sheet[feat_column] = sheet[feat_column].map(mapping)
     sheet[feat_column] = sheet[feat_column].astype("Int64")
     
-    # Instead of using dropna() which changes indices, filter the dataframe directly
+    # Instead of dropna(), filter directly
     sheet = sheet[~sheet[feat_column].isna()]
     
-    return sheet  # Return the modified dataframe
-
-
-# Helper function to apply original labels to axes
-def apply_original_labels(data, ax, column, axis='x'):
-    """Apply original labels to a plot axis if the column was anonymized.
-    
-    Parameters:
-    - data: The dataframe containing the data
-    - ax: The matplotlib axis object
-    - column: The column name that might have been anonymized
-    - axis: 'x' or 'y' to specify which axis to modify
-    """
-    if hasattr(data, 'value_mappings') and f"{column}_reverse" in data.value_mappings:
-        # Get the mapping from numeric ID to original value
-        reverse_mapping = data.value_mappings[f"{column}_reverse"]
-        
-        # Get current tick positions and labels
-        if axis == 'x':
-            ticks = ax.get_xticks()
-            # Only apply to ticks that correspond to actual data values
-            valid_ticks = [tick for tick in ticks if tick.is_integer() and int(tick) in reverse_mapping]
-            if valid_ticks:
-                # Create labels using the original values
-                labels = [reverse_mapping.get(int(tick), '') for tick in valid_ticks]
-                ax.set_xticks(valid_ticks)
-                ax.set_xticklabels(labels, rotation=45, ha='right')
-        elif axis == 'y':
-            ticks = ax.get_yticks()
-            valid_ticks = [tick for tick in ticks if tick.is_integer() and int(tick) in reverse_mapping]
-            if valid_ticks:
-                labels = [reverse_mapping.get(int(tick), '') for tick in valid_ticks]
-                ax.set_yticks(valid_ticks)
-                ax.set_yticklabels(labels)
+    return sheet
 
 
 def preprocess(data):
-    # Apply anonymization to each column and update the dataframe
+    """Preprocess the data for analysis."""
+    # Apply anonymization to each column
     data = anonymizer(data, "Territory")
     data = anonymizer(data, "Brewery")
     data = anonymizer(data, "Style")
-    # data = anonymizer(data, "Added")  # Commented out as in original
+    # data = anonymizer(data, "Added")  # Commented out in original
     data = anonymizer(data, "SRC")
     data = anonymizer(data, "Been To")
 
     # Process ABV column
     char_to_remove = "%"
     data["ABV"] = data["ABV"].str.replace(char_to_remove, '', regex=False)
-    # Fix: Drop rows where ABV is NA from the entire dataframe
+    # Fix the issue by filtering rather than using dropna()
     data = data[~data["ABV"].isna()]
     data["ABV"] = pd.to_numeric(data["ABV"], errors="coerce")
 
@@ -104,56 +92,24 @@ def preprocess(data):
     # Process Added column
     data["Added"] = pd.to_datetime(data["Added"], dayfirst=False, errors='coerce')
     
-    # Return the processed data
     return data
 
 
 def plot_distribution(data):
-    selected_vars = collect_responses(0,"")
     asp = 3
-    
-    # Create plots for each selected variable
-    for var in selected_vars:
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sns.histplot(data[var], kde=True, ax=ax)  # Using histplot instead of displot for more control
-        
-        # Apply original labels if available
-        apply_original_labels(data, ax, var, axis='x')
-        
-        plt.title(f"Distribution of {var}")
-        plt.tight_layout()
-        plt.show()
+    sns.displot(data[collect_responses(0,"")], kde=True, height=6, aspect=asp)
+    plt.show()
 
 
 def plot_heatmap(data):
     plt.rcParams["figure.figsize"] = [8, 8]
-    fig, ax = plt.subplots(figsize=(8, 8))
-    sns.heatmap(data.corr(), color="k", annot=True, ax=ax)
-    plt.title("Correlation Heatmap")
-    plt.tight_layout()
+    sns.heatmap(data.corr(), color="k", annot=True)
     plt.show()
 
 
 def plot_histogram(data):
     plt.rcParams["figure.figsize"] = [8, 8]
-    selected_vars = collect_responses(0,"")
-    
-    # Create the histogram
-    fig, axes = plt.subplots(len(selected_vars), 1, figsize=(8, 6*len(selected_vars)))
-    
-    # Handle case of single variable (axes won't be an array)
-    if len(selected_vars) == 1:
-        axes = [axes]
-    
-    # Plot each variable
-    for i, (var, ax) in enumerate(zip(selected_vars, axes)):
-        data[var].hist(ax=ax)
-        ax.set_title(f"Histogram of {var}")
-        
-        # Apply original labels if available
-        apply_original_labels(data, ax, var, axis='x')
-    
-    plt.tight_layout()
+    data[collect_responses(0,"")].hist()
     plt.show()
 
 
@@ -162,49 +118,27 @@ def plot_scatter(data):
     y = query_2(1)
     data = data.reset_index(drop=True)
     plt.rcParams["figure.figsize"] = [6, 6]
-    
-    # Create the scatter plot
-    fig, ax = plt.subplots(figsize=(6, 6))
-    sns.scatterplot(data=data, x=x, y=y, ax=ax)
-    
-    # Apply original labels if available
-    apply_original_labels(data, ax, x, axis='x')
-    apply_original_labels(data, ax, y, axis='y')
-    
+    sns.scatterplot(data=data, x=x, y=y)
     plt.title(f"{x} by {y}")
-    plt.tight_layout()
     plt.show()
 
 
 def plot_scatter_matrix(data):
-    # Scatter matrix is more complex to modify for original labels
-    # We'll keep this function unchanged for now
     pd.plotting.scatter_matrix(
         data[["Territory", "Brewery", "Zak", "Jon", "Style", "Added", "SRC", "Been To", "Had"]],
         figsize=(10, 9),
         diagonal="hist",
         marker="o")
-    plt.title("Scatter Matrix")
-    plt.tight_layout()
     plt.show()
 
 
 def plot_contour(data):
     x = query(2)
     y = query_2(1)
-    
-    # Create the contour plot
-    fig, ax = plt.subplots()
-    sns.kdeplot(x=data[x], y=data[y], fill=True, cmap="viridis", ax=ax)
-    
-    # Apply original labels if available
-    apply_original_labels(data, ax, x, axis='x')
-    apply_original_labels(data, ax, y, axis='y')
-    
+    sns.kdeplot(x = data[x], y = data[y], fill = True, cmap = "viridis")
     plt.title(f"Contour Plot of {x} vs. {y}")
     plt.xlabel(f"{x}")
     plt.ylabel(f"{y}")
-    plt.tight_layout()
     plt.show()
 
 
@@ -219,46 +153,54 @@ def plot_violin(data):
     print()
     x = query(2)
     y = query_2(1)
-    
-    # Reset index to avoid any potential duplicate index issues
-    data = data.reset_index(drop=True)
-    
     plt.rcParams["figure.figsize"] = [8, 6]
     num_ticks = len(data[x].values.unique())
     plt.locator_params(axis='x', nbins=num_ticks)
+    data = data.reset_index(drop=True)  # Reset index to ensure uniqueness
     
     # Create the violin plot
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sns.violinplot(x=x, y=y, palette="bright", data=data, ax=ax)
+    ax = sns.violinplot(x=x, y=y, palette="bright", data=data)
     
-    # Apply original labels if available
-    apply_original_labels(data, ax, x, axis='x')
-    apply_original_labels(data, ax, y, axis='y')
+    # Get unique values for x-axis
+    unique_vals = sorted(data[x].unique())
     
-    plt.title(f"{x} by {y}")
-    plt.tight_layout()
+    # If we have a mapping for this column, apply it
+    if f"{x}_reverse" in LABEL_MAPPINGS:
+        reverse_mapping = LABEL_MAPPINGS[f"{x}_reverse"]
+        
+        # Create labels from mapping
+        labels = [str(reverse_mapping.get(int(val), val)) for val in unique_vals]
+        
+        # Set the ticks and labels
+        plt.xticks(range(len(unique_vals)), labels, rotation=45, ha='right')
+    
     plt.show()
 
 
 def plot_boxen(data):
     x = query(3)
     y = query_2(2)
+    plt.figure(figsize=(8, 6))
+    sns.boxplot(x=x, y=y, data=data)
     
-    # Create the boxplot
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sns.boxplot(x=x, y=y, data=data, ax=ax)
-    
-    # Apply original labels if available
-    apply_original_labels(data, ax, x, axis='x')
-    apply_original_labels(data, ax, y, axis='y')
-    
-    # Handle special case for "Had" column (maintain original behavior)
+    # If we have a mapping for Had column, use specific labels
     if x == "Had":
-        plt.xticks([0, 1], ["Not Had", "Had"])
+        plt.xticks([0, 1, 2], ["Jon Only", "Both", "Zak Only"])
+    # If we have a mapping for this column, apply it
+    elif f"{x}_reverse" in LABEL_MAPPINGS:
+        reverse_mapping = LABEL_MAPPINGS[f"{x}_reverse"]
+        
+        # Get unique values
+        unique_vals = sorted(data[x].unique())
+        
+        # Create labels from mapping
+        labels = [str(reverse_mapping.get(int(val), val)) for val in unique_vals]
+        
+        # Set the ticks and labels
+        plt.xticks(range(len(unique_vals)), labels, rotation=45, ha='right')
     
     plt.title(f"Box Plot of {y} vs. {x}")
     plt.ylabel(y)
-    plt.tight_layout()
     plt.show()
 
 
@@ -293,31 +235,7 @@ def log_tree(data):
     dt_model = dt.fit(X_train, y_train)
 
     plt.figure(figsize=(10, 8))
-    
-    # Get the feature names
-    feature_names = list(X.columns)
-    
-    # Try to get original feature names if they were anonymized
-    if hasattr(data, 'value_mappings'):
-        feature_names_display = []
-        for col in X.columns:
-            if col in data.value_mappings:
-                # Show some sample values for this feature
-                mapping = data.value_mappings[f"{col}_reverse"]
-                samples = ", ".join([str(mapping.get(key, key)) for key in list(mapping.keys())[:3]])
-                feature_names_display.append(f"{col} ({samples}...)")
-            else:
-                feature_names_display.append(col)
-        
-        # Use the enhanced feature names if available
-        tree.plot_tree(dt_model,
-                      feature_names=feature_names_display,
-                      class_names=["Not Had", "Had"])
-    else:
-        # Fall back to original approach
-        tree.plot_tree(dt_model,
-                      feature_names=feature_names,
-                      class_names=["Not Had", "Had"])
-    
-    plt.tight_layout()
+    tree.plot_tree(dt_model,
+                   feature_names=list(X.columns),
+                   class_names=["Not Had", "Had"])
     plt.show()
